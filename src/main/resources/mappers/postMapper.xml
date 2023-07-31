@@ -23,7 +23,21 @@
 			`post`
 		WHERE
 			`userId` = #{userId}
+			<if test="direction == null">
 		ORDER BY `id` DESC
+			</if>
+		<if test="direction == 'next'">
+		<![CDATA[
+				AND `id` < #{standardId}
+		]]>
+		ORDER BY `id` DESC
+		</if>
+		<if test="direction == 'prev'">
+		<![CDATA[
+			AND `id` > #{standardId}
+		]]>
+		</if>
+		LIMIT ${limit}
 	</select>
 	
 	<insert id="insertPost" parameterType="map">
@@ -61,6 +75,17 @@
 		WHERE
 			`userId` = #{userId}
 			AND `id` = #{postId}
+	</select>
+	
+	<select id="selectPostIdByUserIdAndSort" parameterType="map" resultType="int">
+		SELECT
+			`id`
+		FROM
+			`post`
+		WHERE
+			`userid` = #{userId}
+		ORDER BY `id` ${sort}
+		LIMIT 1
 	</select>
 	
 	<update id="updatePostByPostIdAndUserId" parameterType="map">
